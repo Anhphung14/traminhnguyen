@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libwebp-dev \
+    libxpm-dev \
     libonig-dev \
     libxml2-dev \
     zip \
@@ -39,6 +41,9 @@ RUN composer install --optimize-autoloader --no-dev
 
 # Copy application files
 COPY . .
+
+# Tạo symbolic link cho storage nếu chưa có
+RUN ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage
 
 # Install Node dependencies and build assets
 RUN npm install && npm run build
