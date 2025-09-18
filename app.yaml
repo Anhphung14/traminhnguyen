@@ -5,7 +5,7 @@ env_variables:
   APP_ENV: production
   APP_DEBUG: false
   APP_KEY: base64:agxDflBGwzKvvE8q7to4soDNevUu7wLxpQz0Y5r2OKk=
-  APP_URL: https://your-project-id.appspot.com
+  APP_URL: https://voanhphung-portfolio.as.r.appspot.com
   
   DB_CONNECTION: sqlite
   DB_DATABASE: /tmp/database.sqlite
