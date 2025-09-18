@@ -1,0 +1,23 @@
+runtime: php83
+
+env_variables:
+  APP_NAME: "Trà khổ qua rừng Minh Nguyễn"
+  APP_ENV: production
+  APP_DEBUG: false
+  APP_KEY: base64:agxDflBGwzKvvE8q7to4soDNevUu7wLxpQz0Y5r2OKk=
+  APP_URL: https://your-project-id.appspot.com
+  
+  DB_CONNECTION: sqlite
+  DB_DATABASE: /tmp/database.sqlite
+  
+  # SQLite specific settings
+  DB_FOREIGN_KEYS: true
+  
+  CACHE_DRIVER: file
+  SESSION_DRIVER: file
+  FILESYSTEM_DISK: local
+
+handlers:
+- url: /.*
+  script: auto
+  secure: always
