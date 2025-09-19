@@ -67,8 +67,9 @@ RUN chown -R www-data:www-data /var/www/html \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Configure Apache
-RUN echo '<VirtualHost *:80>\n\
+# Configure Apache for Cloud Run (dynamic port)
+RUN echo 'Listen ${PORT:-8080}\n\
+<VirtualHost *:${PORT:-8080}>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
@@ -76,8 +77,8 @@ RUN echo '<VirtualHost *:80>\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Expose port
-EXPOSE 80
+# Expose port (Cloud Run will set PORT env var)
+EXPOSE 8080
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start Apache with environment variable substitution
+CMD ["sh", "-c", "sed -i 's/\${PORT:-8080}/'${PORT:-8080}'/g' /etc/apache2/sites-available/000-default.conf && apache2-foreground"]
