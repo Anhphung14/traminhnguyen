@@ -67,18 +67,29 @@ RUN chown -R www-data:www-data /var/www/html \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Configure Apache for Cloud Run (dynamic port)
-RUN echo 'Listen ${PORT:-8080}\n\
-<VirtualHost *:${PORT:-8080}>\n\
-    DocumentRoot /var/www/html/public\n\
-    <Directory /var/www/html/public>\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+# Create startup script for dynamic port configuration
+RUN echo '#!/bin/bash\n\
+# Get port from environment variable or default to 8080\n\
+PORT=${PORT:-8080}\n\
+\n\
+# Update Apache configuration with the correct port\n\
+echo "Listen $PORT" > /etc/apache2/ports.conf\n\
+echo "<VirtualHost *:$PORT>" > /etc/apache2/sites-available/000-default.conf\n\
+echo "    DocumentRoot /var/www/html/public" >> /etc/apache2/sites-available/000-default.conf\n\
+echo "    <Directory /var/www/html/public>" >> /etc/apache2/sites-available/000-default.conf\n\
+echo "        AllowOverride All" >> /etc/apache2/sites-available/000-default.conf\n\
+echo "        Require all granted" >> /etc/apache2/sites-available/000-default.conf\n\
+echo "    </Directory>" >> /etc/apache2/sites-available/000-default.conf\n\
+echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf\n\
+\n\
+# Start Apache\n\
+exec apache2-foreground' > /usr/local/bin/start-apache.sh
+
+# Make the script executable
+RUN chmod +x /usr/local/bin/start-apache.sh
 
 # Expose port (Cloud Run will set PORT env var)
 EXPOSE 8080
 
-# Start Apache with environment variable substitution
-CMD ["sh", "-c", "sed -i 's/\${PORT:-8080}/'${PORT:-8080}'/g' /etc/apache2/sites-available/000-default.conf && apache2-foreground"]
+# Start Apache using the startup script
+CMD ["/usr/local/bin/start-apache.sh"]
