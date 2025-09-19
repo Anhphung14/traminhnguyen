@@ -77,6 +77,8 @@ echo "Starting application on port $PORT"\n\
 if [ ! -f /var/www/html/.env ]; then\n\
     cp /var/www/html/.env.example /var/www/html/.env\n\
 fi\n\
+# Set APP_URL to match Cloud Run port\n\
+sed -i "s|^APP_URL=.*|APP_URL=http://localhost:$PORT|" /var/www/html/.env\n\
 # Generate APP_KEY if missing\n\
 if ! grep -q "APP_KEY=" /var/www/html/.env || grep -q "APP_KEY=$" /var/www/html/.env; then\n\
     php artisan key:generate --force\n\
@@ -105,20 +107,20 @@ fi\n\
 \n\
 # Clear any existing caches first\n\
 echo "Clearing Laravel caches..."\n\
-php artisan config:clear\n\
-php artisan route:clear\n\
-php artisan view:clear\n\
-php artisan cache:clear\n\
+php artisan config:clear || true\n\
+php artisan route:clear || true\n\
+php artisan view:clear || true\n\
+php artisan cache:clear || true\n\
 \n\
 # Run Laravel migrations\n\
 echo "Running database migrations..."\n\
-php artisan migrate --force --no-interaction\n\
+php artisan migrate --force --no-interaction || true\n\
 \n\
 # Cache Laravel configuration for production\n\
 echo "Optimizing Laravel for production..."\n\
-php artisan config:cache\n\
-php artisan route:cache\n\
-php artisan view:cache\n\
+php artisan config:cache || true\n\
+php artisan route:cache || true\n\
+php artisan view:cache || true\n\
 \n\
 # Update Apache configuration with the correct port\n\
 echo "Listen $PORT" > /etc/apache2/ports.conf\n\
