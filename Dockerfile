@@ -71,23 +71,16 @@ RUN a2enmod rewrite
 # Create startup script for dynamic port configuration and Laravel setup
 RUN echo '#!/bin/bash\n\
 set -e\n\
-\n\
-# Get port from environment variable or default to 8080\n\
 PORT=${PORT:-8080}\n\
 echo "Starting application on port $PORT"\n\
-\n\
-# Set Laravel environment variables for production\n\
-export APP_ENV=production\n\
-export APP_DEBUG=false\n\
-export APP_KEY=base64:agxDflBGwzKvvE8q7to4soDNevUu7wLxpQz0Y5r2OKk=\n\
-export APP_URL=https://traminhnguyen-00006-nvx-272453304555.a.run.app\n\
-export DB_CONNECTION=sqlite\n\
-export DB_DATABASE=/tmp/database.sqlite\n\
-export CACHE_DRIVER=file\n\
-export SESSION_DRIVER=file\n\
-export FILESYSTEM_DISK=local\n\
-export LOG_CHANNEL=stack\n\
-export LOG_LEVEL=debug\n\
+# Ensure .env exists\n\
+if [ ! -f /var/www/html/.env ]; then\n\
+    cp /var/www/html/.env.example /var/www/html/.env\n\
+fi\n\
+# Generate APP_KEY if missing\n\
+if ! grep -q "APP_KEY=" /var/www/html/.env || grep -q "APP_KEY=$" /var/www/html/.env; then\n\
+    php artisan key:generate --force\n\
+fi\n\
 \n\
 # Create database if it doesn'\''t exist\n\
 if [ ! -f /tmp/database.sqlite ]; then\n\
@@ -128,7 +121,6 @@ php artisan route:cache\n\
 php artisan view:cache\n\
 \n\
 # Update Apache configuration with the correct port\n\
-echo "Configuring Apache for port $PORT..."\n\
 echo "Listen $PORT" > /etc/apache2/ports.conf\n\
 echo "<VirtualHost *:$PORT>" > /etc/apache2/sites-available/000-default.conf\n\
 echo "    DocumentRoot /var/www/html/public" >> /etc/apache2/sites-available/000-default.conf\n\
@@ -137,9 +129,6 @@ echo "        AllowOverride All" >> /etc/apache2/sites-available/000-default.con
 echo "        Require all granted" >> /etc/apache2/sites-available/000-default.conf\n\
 echo "    </Directory>" >> /etc/apache2/sites-available/000-default.conf\n\
 echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf\n\
-\n\
-# Start Apache\n\
-echo "Starting Apache server..."\n\
 exec apache2-foreground' > /usr/local/bin/start-apache.sh
 
 # Make the script executable
