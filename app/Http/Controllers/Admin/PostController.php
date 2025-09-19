@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Cloudinary\Cloudinary;
 
 class PostController extends Controller
 {
@@ -64,16 +65,33 @@ class PostController extends Controller
 
             $data['user_id'] = Auth::id();
 
-            // Handle thumbnail upload
+            // Handle thumbnail upload (Cloudinary)
             if ($request->hasFile('thumbnail')) {
-                $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
-                $data['cover_image'] = Storage::url($thumbnailPath);
-                Log::info('Thumbnail uploaded', [
-                    'path' => $thumbnailPath,
+                $cloudinary = env('CLOUDINARY_URL')
+                    ? new Cloudinary(env('CLOUDINARY_URL'))
+                    : new Cloudinary([
+                        'cloud' => [
+                            'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                            'api_key' => env('CLOUDINARY_API_KEY'),
+                            'api_secret' => env('CLOUDINARY_API_SECRET'),
+                        ],
+                    ]);
+
+                $upload = $cloudinary->uploadApi()->upload(
+                    $request->file('thumbnail')->getRealPath(),
+                    [
+                        'folder' => 'minhnguyen/posts',
+                        'overwrite' => true,
+                        'resource_type' => 'image',
+                    ]
+                );
+
+                $data['cover_image'] = $upload['secure_url'] ?? $upload['url'] ?? null;
+                $data['cover_image_public_id'] = $upload['public_id'] ?? null;
+                Log::info('Thumbnail uploaded to Cloudinary', [
+                    'public_id' => $data['cover_image_public_id'],
                     'url' => $data['cover_image']
                 ]);
-            } else {
-                Log::info('No thumbnail file found in request');
             }
 
             $post = Post::create($data);
@@ -123,16 +141,46 @@ class PostController extends Controller
                 'published_at' => ['nullable', 'date'],
             ]);
 
-            // Handle thumbnail upload
+            // Handle thumbnail upload (Cloudinary)
             if ($request->hasFile('thumbnail')) {
-                // Delete old thumbnail if exists
-                if ($post->cover_image) {
-                    $oldPath = str_replace('/storage/', '', $post->cover_image);
-                    Storage::disk('public')->delete($oldPath);
+                // Delete old thumbnail from Cloudinary if exists
+                if (!empty($post->cover_image_public_id)) {
+                    try {
+                        $cloudinary = env('CLOUDINARY_URL')
+                            ? new Cloudinary(env('CLOUDINARY_URL'))
+                            : new Cloudinary([
+                                'cloud' => [
+                                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                                    'api_key' => env('CLOUDINARY_API_KEY'),
+                                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                                ],
+                            ]);
+                        $cloudinary->uploadApi()->destroy($post->cover_image_public_id, ['resource_type' => 'image']);
+                    } catch (\Throwable $e) {
+                        Log::warning('Failed to delete old Cloudinary image', ['error' => $e->getMessage()]);
+                    }
                 }
-                
-                $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
-                $data['cover_image'] = Storage::url($thumbnailPath);
+
+                $cloudinary = env('CLOUDINARY_URL')
+                    ? new Cloudinary(env('CLOUDINARY_URL'))
+                    : new Cloudinary([
+                        'cloud' => [
+                            'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                            'api_key' => env('CLOUDINARY_API_KEY'),
+                            'api_secret' => env('CLOUDINARY_API_SECRET'),
+                        ],
+                    ]);
+                $upload = $cloudinary->uploadApi()->upload(
+                    $request->file('thumbnail')->getRealPath(),
+                    [
+                        'folder' => 'minhnguyen/posts',
+                        'overwrite' => true,
+                        'resource_type' => 'image',
+                    ]
+                );
+
+                $data['cover_image'] = $upload['secure_url'] ?? $upload['url'] ?? null;
+                $data['cover_image_public_id'] = $upload['public_id'] ?? null;
             }
 
             $post->update($data);
@@ -153,6 +201,22 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        // Delete image from Cloudinary if present
+        if (!empty($post->cover_image_public_id)) {
+            try {
+                $cloudinary = new Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                        'api_key' => env('CLOUDINARY_API_KEY'),
+                        'api_secret' => env('CLOUDINARY_API_SECRET'),
+                    ],
+                ]);
+                $cloudinary->uploadApi()->destroy($post->cover_image_public_id, ['resource_type' => 'image']);
+            } catch (\Throwable $e) {
+                Log::warning('Failed to delete Cloudinary image on post destroy', ['error' => $e->getMessage()]);
+            }
+        }
+
         $post->delete();
         return redirect()->route('admin.posts.index')->with('success', 'Post deleted');
     }

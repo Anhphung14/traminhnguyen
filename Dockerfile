@@ -5,6 +5,7 @@ FROM php:8.3-apache
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    libcurl4-openssl-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
@@ -28,7 +29,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions (gd needs extra config)
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) pdo_mysql mbstring exif pcntl bcmath gd pdo_sqlite zip
+    && docker-php-ext-install -j$(nproc) pdo_mysql mbstring exif pcntl bcmath gd pdo_sqlite zip curl
 
 # Install Composer (multi-stage)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -42,8 +43,16 @@ COPY composer.json composer.lock ./
 # Install PHP dependencies (skip scripts during build)
 RUN composer install --optimize-autoloader --no-dev --no-scripts
 
-# Copy application files
+# Copy application files (bao gồm .env.example nếu không bị ignore)
 COPY . .
+
+# Ensure all Laravel storage/framework subfolders exist and are writable before composer scripts
+RUN mkdir -p /var/www/html/bootstrap/cache \
+    && mkdir -p /var/www/html/storage/framework/cache/data \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views \
+    && chmod -R 775 /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage
 
 # Run composer scripts after copying all files
 RUN composer run-script post-autoload-dump
@@ -61,6 +70,7 @@ RUN touch /tmp/database.sqlite
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/storage/app/public \
     && chmod -R 775 /var/www/html/bootstrap/cache \
     && chmod 664 /tmp/database.sqlite \
     && chown www-data:www-data /tmp/database.sqlite
@@ -68,60 +78,29 @@ RUN chown -R www-data:www-data /var/www/html \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Create startup script for dynamic port configuration and Laravel setup
+# Create debug startup script for Cloud Run
 RUN echo '#!/bin/bash\n\
 set -e\n\
 PORT=${PORT:-8080}\n\
 echo "Starting application on port $PORT"\n\
+echo "Checking Laravel public/index.php..."\n\
+ls -l /var/www/html/public/index.php || (echo "index.php missing!" && exit 1)\n\
+echo "Checking permissions..."\n\
+ls -ld /var/www/html/public\n\
+ls -ld /var/www/html/storage\n\
+ls -ld /var/www/html/bootstrap/cache\n\
 # Ensure .env exists\n\
 if [ ! -f /var/www/html/.env ]; then\n\
     cp /var/www/html/.env.example /var/www/html/.env\n\
 fi\n\
-# Set APP_URL to match Cloud Run port\n\
-sed -i "s|^APP_URL=.*|APP_URL=http://localhost:$PORT|" /var/www/html/.env\n\
 # Generate APP_KEY if missing\n\
 if ! grep -q "APP_KEY=" /var/www/html/.env || grep -q "APP_KEY=$" /var/www/html/.env; then\n\
     php artisan key:generate --force\n\
 fi\n\
-\n\
-# Create database if it doesn'\''t exist\n\
-if [ ! -f /tmp/database.sqlite ]; then\n\
-    echo "Creating SQLite database..."\n\
-    touch /tmp/database.sqlite\n\
-    chmod 664 /tmp/database.sqlite\n\
-    chown www-data:www-data /tmp/database.sqlite\n\
-fi\n\
-\n\
-# Fix permissions for storage and cache directories\n\
-echo "Setting up permissions..."\n\
-chown -R www-data:www-data /var/www/html/storage\n\
-chown -R www-data:www-data /var/www/html/bootstrap/cache\n\
-chmod -R 775 /var/www/html/storage\n\
-chmod -R 775 /var/www/html/bootstrap/cache\n\
-\n\
-# Ensure storage link exists\n\
-echo "Creating storage symbolic link..."\n\
-if [ ! -L /var/www/html/public/storage ]; then\n\
-    ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage\n\
-fi\n\
-\n\
-# Clear any existing caches first\n\
-echo "Clearing Laravel caches..."\n\
-php artisan config:clear || true\n\
-php artisan route:clear || true\n\
-php artisan view:clear || true\n\
-php artisan cache:clear || true\n\
-\n\
-# Run Laravel migrations\n\
-echo "Running database migrations..."\n\
-php artisan migrate --force --no-interaction || true\n\
-\n\
-# Cache Laravel configuration for production\n\
-echo "Optimizing Laravel for production..."\n\
-php artisan config:cache || true\n\
-php artisan route:cache || true\n\
-php artisan view:cache || true\n\
-\n\
+# Run migrations (ignore error if already migrated)\n\
+php artisan migrate --force || true\n\
+# Set APP_URL to match Cloud Run port\n\
+sed -i "s|^APP_URL=.*|APP_URL=http://localhost:$PORT|" /var/www/html/.env\n\
 # Update Apache configuration with the correct port\n\
 echo "Listen $PORT" > /etc/apache2/ports.conf\n\
 echo "<VirtualHost *:$PORT>" > /etc/apache2/sites-available/000-default.conf\n\
@@ -131,10 +110,14 @@ echo "        AllowOverride All" >> /etc/apache2/sites-available/000-default.con
 echo "        Require all granted" >> /etc/apache2/sites-available/000-default.conf\n\
 echo "    </Directory>" >> /etc/apache2/sites-available/000-default.conf\n\
 echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf\n\
+echo "Starting Apache..."\n\
 exec apache2-foreground' > /usr/local/bin/start-apache.sh
 
 # Make the script executable
 RUN chmod +x /usr/local/bin/start-apache.sh
+
+# Suppress Apache ServerName warning (prepend to config)
+RUN sed -i '1iServerName localhost' /etc/apache2/apache2.conf
 
 # Expose port (Cloud Run will set PORT env var)
 EXPOSE 8080

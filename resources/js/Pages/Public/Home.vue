@@ -12,7 +12,7 @@
             </div>
           </div>
           <div class="relative flex justify-center animate-fade-in-right">
-            <img class="relative rounded-3xl shadow-2xl ring-1 ring-emerald-100 transform hover:scale-105 transition-transform duration-300" src="/storage/poster.png" alt="Poster Minh Nguyễn"/>
+            <img class="relative rounded-3xl shadow-2xl ring-1 ring-emerald-100 transform hover:scale-105 transition-transform duration-300" src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271767/poster_qbx4jb.png" alt="Poster Minh Nguyễn"/>
             <div class="absolute -bottom-4 -right-4 bg-emerald-300/50 backdrop-blur-md p-3 rounded-full hidden md:block animate-bounce-slow">
                 <p class="text-emerald-900 font-bold text-sm">100% Tự nhiên</p>
             </div>
@@ -28,17 +28,17 @@
       </div>
       <div class="mt-10 grid md:grid-cols-3 gap-8">
         <div class="p-6 rounded-2xl bg-white ring-1 ring-emerald-100 shadow-sm hover:shadow-md transition transform hover:-translate-y-1 group">
-          <img src="/storage/nguon_goc.jpg" alt="Nguồn gốc tự nhiên" class="w-16 h-16 mb-4 rounded-full object-cover group-hover:scale-110 transition-transform"/>
+          <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271762/nguon_goc_nq0ems.jpg" alt="Nguồn gốc tự nhiên" class="w-16 h-16 mb-4 rounded-full object-cover group-hover:scale-110 transition-transform"/>
           <h3 class="text-xl font-bold text-emerald-800">Nguồn gốc tự nhiên</h3>
           <p class="mt-3 text-emerald-800/80">Chọn lọc kỹ càng từ những trái khổ qua rừng tươi ngon, sấy lạnh giữ trọn dinh dưỡng.</p>
         </div>
         <div class="p-6 rounded-2xl bg-white ring-1 ring-emerald-100 shadow-sm hover:shadow-md transition transform hover:-translate-y-1 group">
-          <img src="/storage/suc_khoe.webp" alt="Health Support" class="w-16 h-16 mb-4 rounded-full object-cover group-hover:scale-110 transition-transform"/>
+          <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271766/suc_khoe_sbgbao.webp" alt="Health Support" class="w-16 h-16 mb-4 rounded-full object-cover group-hover:scale-110 transition-transform"/>
           <h3 class="text-xl font-bold text-emerald-800">Hỗ trợ sức khỏe</h3>
           <p class="mt-3 text-emerald-800/80">Phù hợp người cần thanh lọc cơ thể, hỗ trợ tiêu hóa và mang lại cảm giác sảng khoái.</p>
         </div>
         <div class="p-6 rounded-2xl bg-white ring-1 ring-emerald-100 shadow-sm hover:shadow-md transition transform hover:-translate-y-1 group">
-          <img src="/storage/pha_che_tien_loi.jpg" alt="Easy to Brew" class="w-16 h-16 mb-4 rounded-full object-cover group-hover:scale-110 transition-transform"/>
+          <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271764/pha_che_tien_loi_hl7rbd.jpg" alt="Easy to Brew" class="w-16 h-16 mb-4 rounded-full object-cover group-hover:scale-110 transition-transform"/>
           <h3 class="text-xl font-bold text-emerald-800">Pha chế tiện lợi</h3>
           <p class="mt-3 text-emerald-800/80">Chỉ cần ủ 3-5 phút là có ngay ly trà thơm ngon, xanh mát để thưởng thức bất cứ lúc nào.</p>
         </div>
@@ -59,28 +59,28 @@
         <div class="mt-12 grid md:grid-cols-4 gap-8 text-center">
           <div class="flex flex-col items-center group animate-fade-in-up delay-100">
             <div class="w-20 h-20 bg-emerald-200 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
-              <img src="/storage/thu_hoach.jpg" alt="Thu hoạch" class="h-16 w-16 rounded-full object-cover"/>
+              <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271767/thu_hoach_sk1ypk.jpg" alt="Thu hoạch" class="h-16 w-16 rounded-full object-cover"/>
             </div>
             <h3 class="text-xl font-bold text-emerald-800">Thu hoạch</h3>
             <p class="mt-2 text-emerald-800/80">Hái từng trái khổ qua rừng tươi, non, đảm bảo độ chín vừa phải từ những vườn cây được chăm sóc tự nhiên.</p>
           </div>
           <div class="flex flex-col items-center group animate-fade-in-up delay-200">
             <div class="w-20 h-20 bg-emerald-200 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
-              <img src="/storage/so_che.jpg" alt="Sơ chế" class="h-16 w-16 rounded-full object-cover"/>
+              <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271765/so_che_tiacuw.jpg" alt="Sơ chế" class="h-16 w-16 rounded-full object-cover"/>
             </div>
             <h3 class="text-xl font-bold text-emerald-800">Sơ chế</h3>
             <p class="mt-2 text-emerald-800/80">Rửa sạch, thái lát mỏng và phơi tự nhiên dưới ánh nắng mặt trời để giữ nguyên dưỡng chất và hương vị.</p>
           </div>
           <div class="flex flex-col items-center group animate-fade-in-up delay-300">
             <div class="w-20 h-20 bg-emerald-200 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
-              <img src="/storage/say.jpg" alt="Sấy lạnh" class="h-16 w-16 rounded-full object-cover"/>
+              <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271764/say_uxnvkw.jpg" alt="Sấy lạnh" class="h-16 w-16 rounded-full object-cover"/>
             </div>
             <h3 class="text-xl font-bold text-emerald-800">Sấy lạnh</h3>
             <p class="mt-2 text-emerald-800/80">Sử dụng công nghệ sấy lạnh tiên tiến giúp giữ trọn vẹn màu sắc tự nhiên, hương vị và các vitamin.</p>
           </div>
           <div class="flex flex-col items-center group animate-fade-in-up delay-400">
             <div class="w-20 h-20 bg-emerald-200 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
-              <img src="/storage/poster.png" alt="Đóng gói" class="h-16 w-16 rounded-full object-cover"/>
+              <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271767/poster_qbx4jb.png" alt="Đóng gói" class="h-16 w-16 rounded-full object-cover"/>
             </div>
             <h3 class="text-xl font-bold text-emerald-800">Đóng gói</h3>
             <p class="mt-2 text-emerald-800/80">Sản phẩm được đóng gói cẩn thận trong bao bì thân thiện môi trường, đảm bảo an toàn vệ sinh thực phẩm.</p>

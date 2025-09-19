@@ -25,7 +25,7 @@
           </div>
           <div class="relative">
             <div class="absolute -inset-6 bg-gradient-to-tr from-emerald-200 to-green-200 rounded-3xl blur-2xl opacity-60"></div>
-            <img class="relative rounded-3xl shadow-2xl ring-1 ring-emerald-100" src="/storage/poster.png" alt="Vườn trà"/>
+            <img class="relative rounded-3xl shadow-2xl ring-1 ring-emerald-100" src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271767/poster_qbx4jb.png" alt="Vườn trà"/>
           </div>
         </div>
       </div>
