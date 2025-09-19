@@ -14,7 +14,10 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    sqlite3
+    sqlite3 \
+    libsqlite3-dev \
+    libzip-dev \
+    pkg-config
 
 # Install Node.js (LTS) & npm from NodeSource
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
@@ -24,8 +27,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions (gd needs extra config)
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd pdo_sqlite
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) pdo_mysql mbstring exif pcntl bcmath gd pdo_sqlite zip
 
 # Install Composer (multi-stage)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -36,17 +39,21 @@ WORKDIR /var/www/html
 # Copy composer files first for better caching
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+# Install PHP dependencies (skip scripts during build)
+RUN composer install --optimize-autoloader --no-dev --no-scripts
 
 # Copy application files
 COPY . .
 
-# Tạo symbolic link cho storage nếu chưa có
-RUN ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage
+# Run composer scripts after copying all files
+RUN composer run-script post-autoload-dump
+
+# Tạo thư mục storage và symbolic link
+RUN mkdir -p /var/www/html/storage/app/public \
+    && ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage
 
 # Install Node dependencies and build assets
-RUN npm install && npm run build
+RUN npm install --legacy-peer-deps && npm run build
 
 # Create SQLite database
 RUN touch /tmp/database.sqlite

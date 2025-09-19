@@ -55,3 +55,4 @@
 - **Database**: SQLite (completely free)
 - **Storage**: Local filesystem (free)
 - **Total**: $0/month for small traffic
+

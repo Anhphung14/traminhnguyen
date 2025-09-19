@@ -16,3 +16,4 @@ php artisan migrate --force
 php artisan db:seed --force
 
 echo "Database initialized successfully!"
+
