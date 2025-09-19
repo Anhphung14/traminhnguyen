@@ -60,9 +60,10 @@ RUN touch /tmp/database.sqlite
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache \
-    && chmod 664 /tmp/database.sqlite
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache \
+    && chmod 664 /tmp/database.sqlite \
+    && chown www-data:www-data /tmp/database.sqlite
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -79,24 +80,48 @@ echo "Starting application on port $PORT"\n\
 export APP_ENV=production\n\
 export APP_DEBUG=false\n\
 export APP_KEY=base64:agxDflBGwzKvvE8q7to4soDNevUu7wLxpQz0Y5r2OKk=\n\
+export APP_URL=https://traminhnguyen-00006-nvx-272453304555.a.run.app\n\
 export DB_CONNECTION=sqlite\n\
 export DB_DATABASE=/tmp/database.sqlite\n\
 export CACHE_DRIVER=file\n\
 export SESSION_DRIVER=file\n\
 export FILESYSTEM_DISK=local\n\
+export LOG_CHANNEL=stack\n\
+export LOG_LEVEL=debug\n\
 \n\
 # Create database if it doesn'\''t exist\n\
 if [ ! -f /tmp/database.sqlite ]; then\n\
     echo "Creating SQLite database..."\n\
     touch /tmp/database.sqlite\n\
     chmod 664 /tmp/database.sqlite\n\
+    chown www-data:www-data /tmp/database.sqlite\n\
 fi\n\
+\n\
+# Fix permissions for storage and cache directories\n\
+echo "Setting up permissions..."\n\
+chown -R www-data:www-data /var/www/html/storage\n\
+chown -R www-data:www-data /var/www/html/bootstrap/cache\n\
+chmod -R 775 /var/www/html/storage\n\
+chmod -R 775 /var/www/html/bootstrap/cache\n\
+\n\
+# Ensure storage link exists\n\
+echo "Creating storage symbolic link..."\n\
+if [ ! -L /var/www/html/public/storage ]; then\n\
+    ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage\n\
+fi\n\
+\n\
+# Clear any existing caches first\n\
+echo "Clearing Laravel caches..."\n\
+php artisan config:clear\n\
+php artisan route:clear\n\
+php artisan view:clear\n\
+php artisan cache:clear\n\
 \n\
 # Run Laravel migrations\n\
 echo "Running database migrations..."\n\
 php artisan migrate --force --no-interaction\n\
 \n\
-# Clear and cache Laravel configuration\n\
+# Cache Laravel configuration for production\n\
 echo "Optimizing Laravel for production..."\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
