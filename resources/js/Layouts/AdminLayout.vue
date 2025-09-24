@@ -3,7 +3,7 @@
     <div class="flex">
       <aside class="w-64 min-h-screen bg-white ring-1 ring-emerald-100">
         <div class="h-16 flex items-center px-6 gap-3">
-          <img src="/storage/logo.jpg" alt="Logo" class="h-9 w-auto rounded-md ring-1 ring-emerald-100 object-cover" />
+          <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271762/logo_mkuhb7.jpg" alt="Logo" class="h-9 w-auto rounded-md ring-1 ring-emerald-100 object-cover" />
           <span class="font-extrabold">Admin</span>
         </div>
         <nav class="px-3 space-y-1">

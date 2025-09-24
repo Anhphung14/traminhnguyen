@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libjpeg-dev \
         libfreetype6-dev \
         libonig-dev \
+        # Add PostgreSQL support
+        libpq-dev \
         # Add build tools
         build-essential \
         pkg-config \
@@ -22,7 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         nodejs \
         npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd pdo_mysql zip mbstring \
+    && docker-php-ext-install -j$(nproc) gd pdo_mysql pdo_pgsql zip mbstring \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -51,12 +53,11 @@ RUN npm install --legacy-peer-deps
 # Copy the rest of the application
 COPY . .
 
+# Use the Docker-specific .env file
+RUN cp .env.docker .env
+
 # Build frontend assets
 RUN npm run build
-
-# For production builds, ensure a production-ready .env file exists.
-# For local builds, copy .env.docker to .env before building.
-# This example assumes a .env file is present.
 
 # Generate application key
 RUN php artisan key:generate

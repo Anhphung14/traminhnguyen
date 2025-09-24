@@ -310,7 +310,7 @@ const props = defineProps({
 
 /* Custom background pattern for CTA */
 .bg-texture-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1v1L0 6V5h1V0h4zm-2 2h1v1L2 6V5h1V2zm-2 2h1v1L0 6V5h1V4z'/%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='https://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1v1L0 6V5h1V0h4zm-2 2h1v1L2 6V5h1V2zm-2 2h1v1L0 6V5h1V4z'/%3E%3C/g%3E%3C/svg%3E");
     background-size: 6px 6px;
 }
 </style>

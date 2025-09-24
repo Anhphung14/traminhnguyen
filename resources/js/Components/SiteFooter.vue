@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-10">
       <div>
         <div class="flex items-center gap-3">
-          <img src="/storage/logo.jpg" alt="Logo" class="h-10 w-auto rounded-md ring-1 ring-emerald-300 object-cover"/>
+          <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271762/logo_mkuhb7.jpg" alt="Logo" class="h-10 w-auto rounded-md ring-1 ring-emerald-300 object-cover"/>
           <div class="font-extrabold text-lg">Trà khổ qua rừng Minh Nguyễn</div>
         </div>
         <div class="mt-4 space-y-2 text-emerald-100/90">

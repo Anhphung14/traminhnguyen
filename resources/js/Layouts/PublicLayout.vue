@@ -3,7 +3,7 @@
     <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur ring-1 ring-emerald-100">
       <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="/" class="flex items-center gap-3">
-          <img src="/storage/logo.jpg" alt="Minh Nguyễn" class="h-9 w-auto rounded-md ring-1 ring-emerald-100 object-cover" />
+          <img src="https://res.cloudinary.com/dsqhfz3xt/image/upload/v1758271762/logo_mkuhb7.jpg" alt="Minh Nguyễn" class="h-9 w-auto rounded-md ring-1 ring-emerald-100 object-cover" />
           <span class="font-extrabold text-emerald-900 text-lg md:text-xl">Trà khổ qua rừng Minh Nguyễn</span>
         </a>
         <div class="flex items-center gap-6 text-emerald-800">
